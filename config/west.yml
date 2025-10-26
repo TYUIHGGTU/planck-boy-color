@@ -1,0 +1,16 @@
+manifest:
+  remotes:
+    - name: zmk
+      url-base: https://github.com/zmkfirmware
+    - name: yangxing
+      url-base: https://github.com/yangxing844
+  projects:
+    - name: zmk
+      remote: zmk
+      revision: main
+      import: app/west.yml
+    - name: zmk-tog-io
+      remote: yangxing
+      revision: master
+  self:
+    path: config

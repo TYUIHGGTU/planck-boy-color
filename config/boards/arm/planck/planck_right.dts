@@ -1,0 +1,48 @@
+#include "planck.dtsi"
+#include "leds_right.dtsi"
+
+
+&default_transform {
+	col-offset = <22>;
+};
+&right_encoder {
+    status = "okay";
+};
+
+&matrix_physical_layout {
+  	kscan = <&kscan0>;
+};
+
+/ {
+	chosen {
+		zmk,physical-layout = &matrix_physical_layout;
+	};
+	kscan0: kscan {
+		compatible = "zmk,kscan-gpio-direct";
+		wakeup-source;
+		input-gpios
+			= <&gpio1  10 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  //19
+			, <&gpio1	 13 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)> //18
+			, <&gpio1	 15 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  //13
+			, <&gpio0  2 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  //12
+			, <&gpio0  29 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  //5
+			, <&gpio0  31 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  //5
+			, <&gpio1  11 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)> //4
+			, <&gpio0  26 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)> //ex1
+			, <&gpio0	 4 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  //20
+			, <&gpio0  6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  //17
+			, <&gpio0  8 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  //14
+			, <&gpio1  9 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  //14
+			, <&gpio1  4 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  //11
+			, <&gpio1  1 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)> //6
+			, <&gpio0  20 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  //3
+			, <&gpio0  7 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)> //ex2
+			, <&gpio1  8 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  //21
+			, <&gpio0  11 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)> //16
+			, <&gpio0 15 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  //15
+			, <&gpio1 2 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  //10
+			, <&gpio1 0 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>  //7
+			, <&gpio0 17 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)> //2
+		;
+	};
+};

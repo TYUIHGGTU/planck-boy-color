@@ -1,0 +1,5 @@
+---
+include:
+  - board: planck_left
+  - board: planck_right
+

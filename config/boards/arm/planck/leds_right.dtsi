@@ -1,0 +1,42 @@
+&pinctrl {
+	pwm0_default_led: pwm0_default_led {
+		group1 {
+			psels = <NRF_PSEL(PWM_OUT0, 1, 3)>, //LED0
+							<NRF_PSEL(PWM_OUT1, 1, 7)>, // LED 1
+							<NRF_PSEL(PWM_OUT2, 1, 5)>; // LED 2
+		};
+	};
+	pwm0_sleep_led: pwm0_sleep_led {
+		group1 {
+			psels = <NRF_PSEL(PWM_OUT0, 1, 3)>, // LED0
+							<NRF_PSEL(PWM_OUT1, 1, 7)>, // LED 1
+							<NRF_PSEL(PWM_OUT2, 1, 5)>; // LED 2
+			low-power-enable;
+		};
+	};
+};
+&pwm0 {
+	status = "okay";
+	pinctrl-0 = <&pwm0_default_led>;
+	pinctrl-1 = <&pwm0_sleep_led>;
+	pinctrl-names = "default", "sleep";
+};
+/ {
+pwmleds {
+		compatible = "pwm-leds";
+		pwm_led0: led_0 {
+			pwms = <&pwm0 0 0 PWM_POLARITY_INVERTED>;
+		};
+		pwm_led1: led_1 {
+			pwms = <&pwm0 1 0 PWM_POLARITY_INVERTED>;
+		};
+		pwm_led2: led_2 {
+			pwms = <&pwm0 2 0 PWM_POLARITY_INVERTED>;
+		};
+	};
+	aliases {
+		pwm-led0 = &pwm_led0;
+		pwm-led1 = &pwm_led1;
+		pwm-led2= &pwm_led2;
+	};
+};

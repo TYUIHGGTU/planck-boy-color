@@ -5,7 +5,7 @@
 #include <behaviors/toggle_io.dtsi> // for toggle behavior
 #include <behaviors/on_io.dtsi> // for on behavior
 #include <behaviors/off_io.dtsi> // for off behavior
-
+#include <behaviors/rgbled_widget.dtsi>  // needed to use the behaviors
 // / {
 //     chosen {
 //         zmk,physical-layout = &matrix_physical_layout;
@@ -24,7 +24,7 @@
             //                               |   GUI   |   DEL   | RETURN  |  SPACE  | ESCAPE  |  |  RETURN |  SPACE  |   TAB   |   BSPC  |  R ALT  |
 
             bindings = <
-&tog_io 0 &tog_io 1 &tog_io 2     &kp E     &kp R    &kp T    &kp Y    &kp U     &kp I     &tog_io 0 &tog_io 1 &tog_io 2 
+&&ind_bat  &tog_io 1 &tog_io 2     &kp E     &kp R    &kp T    &kp Y    &kp U     &kp I     &tog_io 0 &tog_io 1 &tog_io 2 
 &kp A              &kp A  &kp S     &kp D     &kp F    &kp G    &kp H    &kp J     &kp K      &kp L     &kp SEMI  &kp SQT
 &kp A              &kp Z  &kp X     &kp C     &kp V    &kp B    &kp C    &kp M     &kp COMMA  &kp DOT   &kp FSLH  &kp RCTRL
                           &kp LGUI  &kp LGUI  &kp DEL  &kp RET  &kp TAB  &kp BSPC  &kp RALT   &kp LGUI

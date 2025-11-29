@@ -42,9 +42,9 @@ pwmleds {
 };
 / {
     aliases {
-        led-red = &led0;
-        led-green = &led1;
-        led-blue = &led2;
+        led-blue = &led0;
+        led-red = &led1;
+        led-green = &led2;
     };
 
     leds {

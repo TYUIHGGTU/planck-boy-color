@@ -2,4 +2,4 @@
 include:
   - board: planck_left
   - board: planck_right
-
+  - snippets: nrf52840-nosd

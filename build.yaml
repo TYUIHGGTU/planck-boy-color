@@ -1,5 +1,6 @@
 ---
 include:
   - board: planck_left
+    snippets: nrf52840-nosd
   - board: planck_right
-  - snippets: nrf52840-nosd
+    snippets: nrf52840-nosd

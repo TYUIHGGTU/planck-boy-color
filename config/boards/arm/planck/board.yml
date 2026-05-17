@@ -1,0 +1,9 @@
+boards:
+  - name: planck_left
+    vendor: modifier_key
+    socs:
+      - name: nrf52840
+  - name: planck_right
+    vendor: modifier_key
+    socs:
+      - name: nrf52840

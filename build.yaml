@@ -1,7 +1,7 @@
 ---
 include:
   - board: planck_left
-    snippet: nrf52480-nosd
+    snippet: nrf52840-nosd
   - board: planck_right
-    snippet: nrf52480-nosd
+    snippet: nrf52840-nosd
 

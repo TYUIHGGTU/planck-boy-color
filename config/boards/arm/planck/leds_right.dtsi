@@ -1,16 +1,16 @@
 &pinctrl {
 	pwm0_default_led: pwm0_default_led {
 		group1 {
-			psels = <NRF_PSEL(PWM_OUT0, 1, 3)>, //LED0
-							<NRF_PSEL(PWM_OUT1, 1, 7)>, // LED 1
-							<NRF_PSEL(PWM_OUT2, 1, 5)>; // LED 2
+			psels = <NRF_PSEL(PWM_OUT0, 1, 7)>, //LED0
+							<NRF_PSEL(PWM_OUT1, 1, 5)>, // LED 1
+							<NRF_PSEL(PWM_OUT2, 1, 3)>; // LED 2
 		};
 	};
 	pwm0_sleep_led: pwm0_sleep_led {
 		group1 {
-			psels = <NRF_PSEL(PWM_OUT0, 1, 3)>, // LED0
-							<NRF_PSEL(PWM_OUT1, 1, 7)>, // LED 1
-							<NRF_PSEL(PWM_OUT2, 1, 5)>; // LED 2
+			psels = <NRF_PSEL(PWM_OUT0, 1, 7)>, // LED0
+							<NRF_PSEL(PWM_OUT1, 1, 5)>, // LED 1
+							<NRF_PSEL(PWM_OUT2, 1, 3)>; // LED 2
 			low-power-enable;
 		};
 	};

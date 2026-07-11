@@ -14,7 +14,7 @@
 
         desk_l_down {
             bindings = <&mo 1>;
-            key-positions = <0 24 12>;
+            key-positions = <25 13 1>;
         };
     };
 
@@ -44,10 +44,10 @@
 
         BLE {
             bindings = <
-&kp Q  &kp Q  &kp Q           &kp Q  &kp Q  &bt BT_SEL 0        &kp Q  &kp Q  &kp Q  &kp Q  &kp Q  &kp Q
-&kp Q  &kp Q  &kp Q           &kp Q  &kp Q  &bt BT_SEL 1        &kp Q  &kp Q  &kp Q  &kp Q  &kp Q  &kp Q
-&kp Q  &kp Q  &kp Q           &kp Q  &kp Q  &bt BT_SEL 2        &kp Q  &kp Q  &kp Q  &kp Q  &kp Q  &kp Q
-              &bt BT_CLR_ALL  &kp Q  &kp Q  &bt BT_CLR          &kp Q  &kp Q  &kp Q  &kp Q
+&kp Q  &kp Q  &kp Q           &kp Q       &kp Q  &bt BT_SEL 0        &kp Q  &kp Q  &kp Q  &kp Q  &kp Q  &kp Q
+&kp Q  &kp Q  &kp Q           &kp Q       &kp Q  &bt BT_SEL 1        &kp Q  &kp Q  &kp Q  &kp Q  &kp Q  &kp Q
+&kp Q  &kp Q  &kp Q           &kp Q       &kp Q  &bt BT_SEL 2        &kp Q  &kp Q  &kp Q  &kp Q  &kp Q  &kp Q
+              &bt BT_CLR_ALL  &bt BT_CLR  &kp Q  &bt BT_SEL 3        &kp Q  &kp Q  &kp Q  &kp Q
             >;
 
             label = "BLE";

@@ -42,9 +42,9 @@
 
         BLE {
             bindings = <
-&kp Q  &tog_io 0  &tog_io 1  &tog_io 2       &kp Q  &bt BT_SEL 0        &kp Q  &kp Q  &kp Q  &kp Q  &kp Q  &kp Q
-&kp Q  &kp Q  &kp Q           &kp Q       &kp Q  &bt BT_SEL 1        &kp Q  &kp Q  &kp Q  &kp Q  &kp Q  &kp Q
-&kp Q  &kp Q  &kp Q           &kp Q       &kp Q  &bt BT_SEL 2        &kp Q  &kp Q  &kp Q  &kp Q  &kp Q  &kp Q
+&kp Q  &kp Q  &tog_io 0       &kp Q  &kp Q  &bt BT_SEL 0        &kp Q  &kp Q  &kp Q  &kp Q  &kp Q  &kp Q
+&kp Q  &kp Q  &tog_io 1       &kp Q  &kp Q  &bt BT_SEL 1        &kp Q  &kp Q  &kp Q  &kp Q  &kp Q  &kp Q
+&kp Q  &kp Q  &tog_io 2       &kp Q  &kp Q  &bt BT_SEL 2        &kp Q  &kp Q  &kp Q  &kp Q  &kp Q  &kp Q
               &bt BT_CLR_ALL  &bt BT_CLR  &kp Q  &bt BT_SEL 3        &kp Q  &kp Q  &kp Q  &kp Q
             >;
 

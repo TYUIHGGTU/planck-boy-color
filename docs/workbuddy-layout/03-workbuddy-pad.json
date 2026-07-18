@@ -1,0 +1,60 @@
+{name: "WorkBuddy Pad with PlanckBoy Color",author: "planck-boy-color"
+},
+[
+    {c: "#ffffff",t: "#000000",f: 3,w: 4,d: true
+    },
+    "<b>WorkBuddy Pad</b>\nwith PlanckBoy Color"
+],
+[
+    {c: "#ffffff",t: "#000000",f: 3
+    },
+    "主\n窗口",
+    "展开\n全屏",
+    "对话\n搜索",
+    "停止\n生成"
+],
+[
+    {c: "#ffffff",t: "#000000",f: 3
+    },
+    "设置\n面板",
+    "字号\n0",
+    "字号\n+",
+    "字号\n-"
+],
+[
+    {c: "#ffffff",t: "#000000",f: 3
+    },
+    "@\nAgent",
+    "/\nSkills",
+    "左侧\n目录",
+    "右侧\n产物"
+],
+[
+    {c: "#ffffff",t: "#000000",f: 3
+    },
+    "新建\n对话",
+    "语音\n输入",
+    "换行\n输入",
+    "发送\n消息"
+],
+[
+    {c: "#ffffff",t: "#000000",f: 3
+    },
+    "上一\n任务",
+    "↑",
+    "下一\n任务",
+    {d: true
+    },
+    "LED"
+],
+[
+    {c: "#ffffff",t: "#000000",f: 3
+    },
+    "←",
+    "↓",
+    "→",
+    {d: true
+    },
+    "旋钮"
+]
+]

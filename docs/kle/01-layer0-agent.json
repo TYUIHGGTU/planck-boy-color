@@ -1,0 +1,73 @@
+{name: "Planck Left Codex — L0 Agent",author: "planck-boy-color"
+},
+[
+    {c: "#3d1f1f",t: "#ffcccc",f: 3
+    },
+    "拒绝\nesc",
+    {c: "#1f2a3d",t: "#cce0ff"
+    },
+    "命令菜单\nhome",
+    {c: "#1f3d2a",t: "#ccffdd"
+    },
+    "新建任务\nins",
+    {c: "#3d2a1f",t: "#ffe0cc"
+    },
+    "关闭标签\ndel",
+    {x: 0.25,c: "#eeeeee",t: "#000000",f: 4,w: 10,h: 6,d: true
+    },
+    "<h5><b>L0 Agent（默认层）</b></h5><p>日常监工层。1–9 直达任务；esc/Enter 拒批；旋钮调推理。</p><ul><li><b>alt</b> 按住 → L1 Nav</li><li><b>~</b> 按住 → L2 Composer</li><li><b>?</b> 按住 → L3 Tools</li></ul><p>快捷键：拒绝 Escape · 批准 Enter · 新建 ⌘N · 关闭 ⌘W · 任务 ⌘1–9 · 新聊天 ⌥⌘N · 上/下任务 ⇧⌘[ / ⇧⌘]</p>"
+],
+[
+    {c: "#1f3d2a",t: "#ccffdd",f: 3
+    },
+    "批准\n=",
+    {c: "#2a2a2a",t: "#eeeeee"
+    },
+    "归档\n-",
+    "置顶\n*",
+    {c: "#2a2438",t: "#e0d4ff"
+    },
+    "帮助/L3\n?"
+],
+[
+    {c: "#1a2330",t: "#9ecbff",f: 4
+    },
+    "任务1\n1",
+    "任务2\n2",
+    "任务3\n3",
+    {c: "#24382a",t: "#d4ffe0",f: 3
+    },
+    "终端/L2\n~"
+],
+[
+    {c: "#1a2330",t: "#9ecbff",f: 4
+    },
+    "任务4\n4",
+    "任务5\n5",
+    "任务6\n6",
+    {c: "#384024",t: "#f0ffd4",f: 3
+    },
+    "UI/L1\nalt"
+],
+[
+    {c: "#1a2330",t: "#9ecbff",f: 4
+    },
+    "任务7\n7",
+    "任务8\n8",
+    "任务9\n9",
+    {c: "#333333",t: "#aaaaaa",f: 3,d: true
+    },
+    "LED"
+],
+[
+    {c: "#1f3d2a",t: "#ccffdd",f: 3
+    },
+    "新聊天\n0",
+    {c: "#2a2a2a",t: "#eeeeee"
+    },
+    "上一任务\n,",
+    "下一任务\n.",
+    {c: "#3d3020",t: "#ffdd99",f: 3,d: true
+    },
+    "旋钮\n推理±"
+]

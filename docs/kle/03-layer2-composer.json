@@ -1,0 +1,7 @@
+{name:"Planck Left Codex — L2 Composer",author:"planck-boy-color"},
+[{c:"#3d2e1a",t:"#ffe0b3",f:3},"拒绝\nesc","选模型\nhome","附加文件\nins","添加照片\ndel",{x:0.25,c:"#eeeeee",t:"#000000",f:4,w:10,h:6,d:true},"<h5><b>L2 Composer（按住 ~）</b></h5><p>写作 / 推理 / 语音层。标注「自设」的项需先在 Codex 快捷键设置里绑定。</p><p>旋钮与 L0 一致：转=推理± · 按=模型 ⌃⇧M</p><p>已有默认快捷键：模型 ⌃⇧M · 听写 ⌃⇧D · 语音 ⌃⇧V · Deeplink ⌥⌘L · Session ⌥⌘C · 工作目录 ⇧⌘C · 任务路径 ⌥⇧⌘C</p>"],
+[{f:3},"发送\n=","推理-\n-","推理+\n*","循环推理\n?"],
+[{f:3},"听写\n1","语音模式\n2","快速模式\n3",{c:"#24382a",t:"#d4ffe0"},"Composer\n~"],
+[{c:"#3d2e1a",t:"#ffe0b3",f:3},"规划模式\n4","复制MD\n5","Deeplink\n6",{c:"#2a2a2a",t:"#cccccc"},"—\nalt"],
+[{c:"#3d2e1a",t:"#ffe0b3",f:3},"SessionID\n7","工作目录\n8","任务路径\n9",{c:"#333333",t:"#aaaaaa",d:true},"LED"],
+[{c:"#3d2e1a",t:"#ffe0b3",f:3},"新任务续写\n0","置顶摘要\n,","切换审阅\n.",{c:"#3d3020",t:"#ffdd99",d:true},"旋钮\n推理±"]

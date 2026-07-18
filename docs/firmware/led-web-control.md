@@ -93,7 +93,7 @@ report 无 report ID，故 WebHID 用 `sendReport(0, data)`。
 
 按价值/成本粗排，供后续迭代参考：
 
-- **清理死配置。** 把 `planck.conf` 里仍需要的项迁到 `planck_left.conf` / `planck_right.conf`，然后删除 `planck.conf`，消除“看着生效实则无效”的坑（另见 `docs/CLEANUP.md`）。
+- **清理死配置。** 把 `planck.conf` 里仍需要的项迁到 `planck_left.conf` / `planck_right.conf`，然后删除 `planck.conf`，消除“看着生效实则无效”的坑（另见 [CLEANUP.md](./CLEANUP.md)）。
 - **亮度控制。** 现为纯开关。若接受用 PWM，可扩展协议加入每灯亮度（0–255），做呼吸/渐变。
 - **fail-safe / 心跳。** 可选：主机断开或一段时间无 report 后自动回到某个默认状态，避免“忘了关”。
 - **更丰富的下行协议。** 当前只有 `0xAB=设置`。可加入闪烁模式、单灯操作、查询等命令字。
@@ -101,3 +101,14 @@ report 无 report ID，故 WebHID 用 `sendReport(0, data)`。
 - **固定 ZMK 版本。** 目前 `zmk` / `zmk-raw-hid` 跟随 `main`，上游破坏性变更可能导致构建失败或行为变化。稳定后建议在 `config/west.yml` 固定到发布版本。
 - **对称支持右板。** 如需右板也能网页控灯，为 `planck_right` 建对应 `planck_right.conf` 并复用同一模块（模块已按 `CONFIG_PLANCK_LED_CONTROL` 守卫，右板默认不启用）。
 - **与 tog_io 收敛。** 既然 `&tog_io` 当前无效，可考虑移除 keymap 中的 `&tog_io`，统一由本模块管理 LED，避免概念重复。
+
+## 可借鉴的协议 / 健壮性模式（参考 arkey）
+
+同类开源项目 [shuhari04/arkey](https://github.com/shuhari04/arkey) 用 QMK Raw HID 做了成熟的「主机 → 键盘」灯效通道，其设计对本方案演进有直接参考价值（arkey 为 PolyForm Noncommercial，仅借鉴设计，不可照抄代码商用）：
+
+- **能力协商（Hello / capabilities 握手）。** arkey 主机先发 Hello，校验固件 `layoutHash`、LED 数、feature flag，匹配后才开启完整控制，不匹配退回普通键盘。本方案当前 `0xAB` 是「无脑设置」，可加一条查询命令返回固件版本 / LED 数 / 能力位，避免主机程序与固件错配。
+- **心跳 + fail-open（对应本文 backlog 的「fail-safe / 心跳」）。** arkey 固件在「心跳丢失 / 传输切换 / daemon 退出」后自动恢复到之前的 RGB 状态。arkey 实证了这一项值得做——主机程序崩溃或忘关时，LED 能自动回到默认态。
+- **staged commit（暂存 + 原子提交）。** 多帧灯效先暂存、最后一帧带 commit 位再整体切换，避免刷新途中闪烁。本方案若将来扩展到多灯 / 动画，可借此避免中间态。
+- **更完整的帧结构。** arkey 32 字节帧为 `magic(0xB0 0x47) + 版本 + opcode + payload_len + sequence + payload`；比当前单字节 `0xAB` 命令更利于扩展（版本协商、多命令字、序列号防重放）。本文「更丰富的下行协议」一项可朝此演进。
+
+> 状态源侧（消费 codex app-server 事件 → 决定点哪颗灯）的映射规则见 [codex-agent-loop-hooks-app-server.md](../codex/codex-agent-loop-hooks-app-server.md) 第 7 节；整体还原度评估见 [codex-micro-parity.md](../codex/codex-micro-parity.md)。

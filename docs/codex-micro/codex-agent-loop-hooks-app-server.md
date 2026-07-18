@@ -377,16 +377,60 @@ CI / 脚本跑完拿结果？
 
 
 
-## 7. 与本仓库其他文档的关系
+## 7. 实证：App Server 事件 → 状态灯映射（来自 arkey）
 
-- [codex-micro-capabilities.md](./codex-micro-capabilities.md)：硬件键如何映射 agent 状态——状态源最终可来自 App Server 事件流。  
-- [shortkey.md](./shortkey.md)：桌面端快捷键，属于应用外壳，不替代 hooks / app-server。
+同类开源项目 [shuhari04/arkey](https://github.com/shuhari04/arkey)（QMK + macOS，source-available）已把「App Server 事件流驱动键盘状态灯」跑通。它**只用 App Server**（不用 hooks / notify 驱动灯），其 `src/runtime.ts` 里的映射可作为落地范本：
+
+| App Server 通知 | 判定 | 语义状态 |
+| --- | --- | --- |
+| `turn/started` | — | working（运行中） |
+| `turn/completed` | `status=completed` | completeUnread（完成 / 未读） |
+| `turn/completed` | `status=failed` | error（出错） |
+| `turn/completed` | 其他 | idle |
+| `thread/status/changed` | `active` 且 `activeFlags` 含 `waitingOnApproval` / `waitingOnUserInput` | requiresInput（待审批 / 待输入） |
+| `thread/status/changed` | `active`（无上述 flag） | working |
+| `thread/status/changed` | `systemError` / `notLoaded` | error / offline |
+| 审批 server request（到达） | — | requiresInput |
+| `serverRequest/resolved` | — | 重算该线程输入态 |
+| `error`（`willRetry≠true`） | — | error |
+
+多线程并存时的**优先级仲裁**（数字大者优先）：
+
+```text
+requiresInput(6) > completeUnread(5) > working(4) > idle > offline > unassigned
+```
+
+对应的语义配色（arkey 7 态）：idle=白、working=蓝 `#304FFE`、completeUnread=绿 `#00FF4C`、requiresInput=琥珀 `#FF6D00`、error=红 `#FF0033`、offline/unassigned=灭。
+
+> 语音态注意：arkey 的语音是**本机 macOS 客户端自做的 speech-to-text**，其实验固件的 native PTT 音频由 ChatGPT Desktop 直接处理——都**不来自 App Server 事件流**。因此若要做「监听指示灯」，别指望 App Server 给「语音开 / 关」事件，需自行监听系统麦克风 / 快捷键触发态。
+
+## 8. 旁路情报：Desktop 与 Codex Micro 的原生 HID 通道（report `0x06`）
+
+arkey 的隔离实验模式（Codex Micro Lab）还揭示了一条**独立于 App Server** 的原生通道，作为背景情报记录：
+
+- ChatGPT Desktop 与真机 Codex Micro 之间走 **HID Report ID `0x06`，64 字节**，承载版本 / 设备状态、**六个任务灯**、keys/ambient 灯光、按键、旋钮、方向事件。
+- 即：设备若以 Desktop 期望的 USB 身份枚举，Desktop 会**原生驱动状态灯并接收控件事件，无需 App Server 或桥接程序**。这解释了 Micro 的「不弹窗单击切前台 / 六色状态墙 / 摇杆方向」为何是原生能力。
+- 该 `0x06` 帧的**确切字节布局并未公开**（arkey 系逆向观察），且未承诺稳定，随 Desktop 更新可能失效；走这条路需**仿冒非自有 USB 身份**，涉及商标 / 服务条款 / 法律风险。
+- 原生目标共 **13 个**：6 Agent（`AG00–AG05`）+ 6 Command（`ACT06/07/08/09/10/12`）+ 1 编码器（`ENC_PRESS`），外加 4 个 joystick 方向事件；**Skill / Cancel 无原生目标**，只能走 App Server。
+
+结论：正当且可维护的路线仍是 **App Server 事件流（第 7 节的映射）**；`0x06` 仅作理解 Micro 原生行为的背景，不建议在自研设备上仿冒实现。详见 [codex-micro-parity.md](./codex-micro-parity.md) 第 6 节。
 
 ---
 
 
 
-## 8. 参考链接
+## 9. 与本仓库其他文档的关系
+
+- [codex-micro-capabilities.md](./codex-micro-capabilities.md)：硬件键如何映射 agent 状态——状态源最终可来自 App Server 事件流。
+- [codex-micro-parity.md](./codex-micro-parity.md)：planck_left 对 Micro 的还原度评估；第 7/8 节的事件映射与 `0x06` 情报在其第 6 节有完整展开。
+- [led-web-control.md](../firmware/led-web-control.md)：本仓库的 LED 下行通道，是消费上述事件后「点灯」的落地端。
+- [codex-shortcut.md](./codex-shortcut.md)：桌面端快捷键，属于应用外壳，不替代 hooks / app-server。
+
+---
+
+
+
+## 10. 参考链接
 
 - [Unlocking the Codex harness: how we built the App Server](https://openai.com/index/unlocking-the-codex-harness/)
 - [Unrolling the Codex agent loop](https://openai.com/index/unrolling-the-codex-agent-loop/)
@@ -396,4 +440,5 @@ CI / 脚本跑完拿结果？
 - [Non-interactive – developers.openai.com/codex/noninteractive](https://developers.openai.com/codex/noninteractive)
 - [Advanced Configuration（notify）](https://developers.openai.com/codex/config-advanced)
 - 开源实现：`openai/codex` → `codex-rs/app-server`、Codex core
+- 同类外设集成参考：[shuhari04/arkey](https://github.com/shuhari04/arkey)（App Server 事件 → 键盘状态灯；协议见其 `docs/ARCHITECTURE.md`、`docs/CODEX_MICRO_LAB.md`）
 

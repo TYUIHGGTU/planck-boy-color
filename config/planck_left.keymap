@@ -20,7 +20,7 @@
     keymap {
         compatible = "zmk,keymap";
 
-        // WorkBuddy Pad（对照 docs/workbuddy-layout/03-workbuddy-pad.json）
+        // WorkBuddy Pad（对照 docs/workbuddy/layout/03-workbuddy-pad.json）
         // 列优先、自下而上：底行 ←↓→，顶行 主窗口/全屏/搜索/停止
         WORKBUDDY {
             bindings = <

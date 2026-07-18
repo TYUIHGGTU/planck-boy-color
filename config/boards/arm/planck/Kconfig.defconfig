@@ -6,16 +6,16 @@
 if BOARD_PLANCK_LEFT
 
 config ZMK_KEYBOARD_NAME
-		default "PlanckBoy Color"
+		default "PlanckBoy L"
+endif
 
-config ZMK_SPLIT_ROLE_CENTRAL
-		default y
-endif 
+if BOARD_PLANCK_RIGHT
+
+config ZMK_KEYBOARD_NAME
+		default "PlanckBoy R"
+endif
 
 if BOARD_PLANCK_LEFT || BOARD_PLANCK_RIGHT
-
-config ZMK_SPLIT
-		default y
 
 config BT_CTLR
 		default BT

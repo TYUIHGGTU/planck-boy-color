@@ -5,6 +5,10 @@ on:
     paths:
       - config/**
       - build.yaml
+      - CMakeLists.txt
+      - Kconfig
+      - zephyr/**
+      - src/**
 
 jobs:
   build:

@@ -1,0 +1,27 @@
+# SPDX-License-Identifier: MIT
+
+config PLANCK_LED_CONTROL
+	bool "Web-controlled LED + status indicator (planck_left)"
+	depends on !ZMK_SPLIT || ZMK_SPLIT_ROLE_CENTRAL
+	select RAW_HID
+	help
+	  Drives the three onboard GPIO LEDs from the host over Raw HID
+	  (usage page 0xFF60) and, optionally, shows battery / connection
+	  status. Intended for the planck_left board over USB.
+
+if PLANCK_LED_CONTROL
+
+config PLANCK_LED_STATUS
+	bool "Also show battery / connection status on the LEDs"
+	default y
+	help
+	  When enabled, battery level and BLE/USB connection changes briefly
+	  flash a color on the LEDs, then the LEDs return to the state last set
+	  by the host over Raw HID. Disable to make the LEDs purely host-driven.
+
+config PLANCK_LED_STATUS_BLINK_MS
+	int "Status flash duration in milliseconds"
+	default 1200
+	depends on PLANCK_LED_STATUS
+
+endif # PLANCK_LED_CONTROL

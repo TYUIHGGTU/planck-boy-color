@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PlanckBoy Left · LED 控制台</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --card: #181b22;
+    --line: #272b34;
+    --text: #e7e9ee;
+    --muted: #9aa0ad;
+    --accent: #5b8cff;
+    --danger: #ff5b6e;
+    --ok: #33d69f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: radial-gradient(1200px 800px at 70% -10%, #1b2030 0%, var(--bg) 55%);
+    color: var(--text);
+    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 40px 16px;
+  }
+  .app { width: 100%; max-width: 520px; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  .sub { color: var(--muted); font-size: 13px; margin-bottom: 20px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .row { display: flex; align-items: center; gap: 12px; }
+  .row + .row { margin-top: 14px; }
+  button {
+    font: inherit;
+    color: var(--text);
+    background: #232732;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: 0.15s;
+  }
+  button:hover:not(:disabled) { border-color: var(--accent); }
+  button:disabled { opacity: 0.45; cursor: not-allowed; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #0b1020; font-weight: 600; }
+  .status { font-size: 13px; color: var(--muted); }
+  .status.ok { color: var(--ok); }
+  .status.err { color: var(--danger); }
+  .leds { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .led {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px 10px;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+    transition: 0.15s;
+  }
+  .led:hover { border-color: var(--accent); }
+  .dot {
+    width: 40px; height: 40px; border-radius: 50%;
+    margin: 0 auto 10px;
+    background: #2a2f3a;
+    border: 1px solid #3a4150;
+    transition: 0.15s;
+  }
+  .led[data-on="1"] .dot { box-shadow: 0 0 18px 2px currentColor; background: currentColor; }
+  .led.blue { color: #4aa3ff; }
+  .led.red { color: #ff5b6e; }
+  .led.green { color: #33d69f; }
+  .led .name { font-size: 13px; }
+  .led .state { font-size: 12px; color: var(--muted); }
+  .actions { display: flex; gap: 10px; margin-top: 16px; }
+  .actions button { flex: 1; }
+  .log {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px; color: var(--muted);
+    white-space: pre-wrap; word-break: break-all;
+    max-height: 140px; overflow: auto;
+  }
+  .hint { font-size: 12px; color: var(--muted); margin-top: 8px; }
+  code { background: #232732; padding: 1px 5px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <h1>PlanckBoy Left · LED 控制台</h1>
+  <div class="sub">通过 WebHID 直连键盘，控制 3 颗板载 LED 开灭。需 Chrome / Edge + USB 连接。</div>
+
+  <div class="card">
+    <div class="row">
+      <button id="connect" class="primary">连接键盘</button>
+      <button id="disconnect" disabled>断开</button>
+      <span id="status" class="status">未连接</span>
+    </div>
+    <div class="hint">首次点击会弹出设备选择框，选中 <code>PlanckBoy L</code>（usage page 0xFF60）。</div>
+  </div>
+
+  <div class="card">
+    <div class="leds">
+      <div class="led blue" data-bit="0" data-on="0">
+        <div class="dot"></div>
+        <div class="name">LED0 蓝</div>
+        <div class="state">灭</div>
+      </div>
+      <div class="led red" data-bit="1" data-on="0">
+        <div class="dot"></div>
+        <div class="name">LED1 红</div>
+        <div class="state">灭</div>
+      </div>
+      <div class="led green" data-bit="2" data-on="0">
+        <div class="dot"></div>
+        <div class="name">LED2 绿</div>
+        <div class="state">灭</div>
+      </div>
+    </div>
+    <div class="actions">
+      <button id="allOn" disabled>全亮</button>
+      <button id="allOff" disabled>全灭</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="status" style="margin-bottom:8px;">日志</div>
+    <div id="log" class="log"></div>
+  </div>
+</div>
+
+<script>
+  // 必须与固件 led_control.c 保持一致
+  const USAGE_PAGE = 0xFF60;
+  const CMD_SET = 0xAB;
+  const REPORT_SIZE = 32;
+
+  let device = null;
+  let mask = 0; // bit0=LED0(蓝), bit1=LED1(红), bit2=LED2(绿)
+
+  const $ = (id) => document.getElementById(id);
+  const statusEl = $('status');
+  const logEl = $('log');
+
+  function log(msg) {
+    const t = new Date().toLocaleTimeString();
+    logEl.textContent = `[${t}] ${msg}\n` + logEl.textContent;
+  }
+
+  function setStatus(text, cls) {
+    statusEl.textContent = text;
+    statusEl.className = 'status' + (cls ? ' ' + cls : '');
+  }
+
+  function setControlsEnabled(on) {
+    $('disconnect').disabled = !on;
+    $('allOn').disabled = !on;
+    $('allOff').disabled = !on;
+    $('connect').disabled = on;
+  }
+
+  function renderLeds() {
+    document.querySelectorAll('.led').forEach((el) => {
+      const bit = Number(el.dataset.bit);
+      const isOn = (mask >> bit) & 1;
+      el.dataset.on = isOn ? '1' : '0';
+      el.querySelector('.state').textContent = isOn ? '亮' : '灭';
+    });
+  }
+
+  function findOutputReportId() {
+    if (!device) return 0;
+    for (const c of device.collections || []) {
+      for (const r of c.outputReports || []) {
+        return r.reportId ?? 0;
+      }
+    }
+    return 0;
+  }
+
+  async function sendMask() {
+    if (!device || !device.opened) {
+      log('设备未连接，忽略发送');
+      return;
+    }
+    const data = new Uint8Array(REPORT_SIZE);
+    data[0] = CMD_SET;
+    data[1] = mask & 0x07;
+    const reportId = findOutputReportId();
+    try {
+      await device.sendReport(reportId, data);
+      log(`发送 mask=0b${(mask & 7).toString(2).padStart(3, '0')} (reportId=${reportId})`);
+    } catch (e) {
+      // 某些平台需要走 feature report
+      try {
+        await device.sendFeatureReport(reportId, data);
+        log(`sendReport 失败，改用 featureReport 成功`);
+      } catch (e2) {
+        log('发送失败: ' + (e2.message || e2));
+        setStatus('发送失败', 'err');
+      }
+    }
+  }
+
+  async function openDevice(dev) {
+    device = dev;
+    if (!device.opened) await device.open();
+    setStatus(`已连接: ${device.productName || 'HID'}`, 'ok');
+    setControlsEnabled(true);
+    log('已连接并打开设备');
+    await sendMask(); // 同步一次当前状态
+  }
+
+  $('connect').addEventListener('click', async () => {
+    if (!('hid' in navigator)) {
+      setStatus('此浏览器不支持 WebHID（请用 Chrome/Edge）', 'err');
+      return;
+    }
+    try {
+      const devices = await navigator.hid.requestDevice({
+        filters: [{ usagePage: USAGE_PAGE }],
+      });
+      if (!devices.length) {
+        log('未选择设备');
+        return;
+      }
+      await openDevice(devices[0]);
+    } catch (e) {
+      log('连接失败: ' + (e.message || e));
+      setStatus('连接失败', 'err');
+    }
+  });
+
+  $('disconnect').addEventListener('click', async () => {
+    if (device && device.opened) await device.close();
+    device = null;
+    setStatus('已断开');
+    setControlsEnabled(false);
+  });
+
+  document.querySelectorAll('.led').forEach((el) => {
+    el.addEventListener('click', () => {
+      if (!device || !device.opened) return;
+      const bit = Number(el.dataset.bit);
+      mask ^= (1 << bit);
+      renderLeds();
+      sendMask();
+    });
+  });
+
+  $('allOn').addEventListener('click', () => { mask = 0x07; renderLeds(); sendMask(); });
+  $('allOff').addEventListener('click', () => { mask = 0x00; renderLeds(); sendMask(); });
+
+  // 尝试复用已授权设备
+  if ('hid' in navigator) {
+    navigator.hid.getDevices().then((list) => {
+      const dev = list.find((d) =>
+        d.collections?.some((c) => c.usagePage === USAGE_PAGE));
+      if (dev) {
+        log('发现已授权设备，点击“连接键盘”即可打开');
+      }
+    });
+    navigator.hid.addEventListener('disconnect', (e) => {
+      if (device && e.device === device) {
+        device = null;
+        setStatus('设备已拔出');
+        setControlsEnabled(false);
+        log('设备断开连接');
+      }
+    });
+  } else {
+    setStatus('此浏览器不支持 WebHID（请用 Chrome/Edge）', 'err');
+    $('connect').disabled = true;
+  }
+
+  renderLeds();
+</script>
+</body>
+</html>

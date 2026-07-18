@@ -1,0 +1,4 @@
+name: planck-led-control
+build:
+  cmake: .
+  kconfig: Kconfig

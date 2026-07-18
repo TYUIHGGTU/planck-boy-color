@@ -22,13 +22,25 @@
 
 32 字节 report：
 
-| 字节 | 含义 |
-| --- | --- |
-| 0 | 固定 `0xAB`（命令：设置 LED） |
-| 1 | bitmask：bit0=LED0(蓝) bit1=LED1(红) bit2=LED2(绿)，1=亮 |
-| 2..31 | 忽略 |
+| 字节  | 含义                                                     |
+| ----- | -------------------------------------------------------- |
+| 0     | 固定 `0xAB`（命令：设置 LED）                            |
+| 1     | bitmask：bit0=LED0(蓝) bit1=LED1(红) bit2=LED2(绿)，1=亮 |
+| 2..31 | 忽略                                                     |
 
 report 无 report ID，故 WebHID 用 `sendReport(0, data)`。
+
+## 涉及文件
+
+| 文件                                   | 作用                                                            |
+| -------------------------------------- | --------------------------------------------------------------- |
+| `config/west.yml`                      | 新增 `zzeneg/zmk-raw-hid` 依赖                                  |
+| `zephyr/module.yml`                    | 让仓库根成为 ZMK 模块（CI 自动作为 `ZMK_EXTRA_MODULES`）        |
+| `CMakeLists.txt` / `Kconfig`（仓库根） | 模块构建入口与配置项 `PLANCK_LED_CONTROL` / `PLANCK_LED_STATUS` |
+| `src/led_control.c`                    | 核心：收 Raw HID 驱动 LED + 电量/连接状态闪烁 + 优先级仲裁      |
+| `config/planck_left.conf`              | 只对左板开启 `RAW_HID` / 第二 HID 接口 / 本模块 / 电量上报      |
+| `.github/workflows/build.yml`          | 把根模块文件纳入 CI 触发路径                                    |
+| `tools/led-web/index.html`             | WebHID 控制网页                                                 |
 
 ## 只改了左板
 
@@ -64,3 +76,28 @@ report 无 report ID，故 WebHID 用 `sendReport(0, data)`。
 - 需 Chrome/Edge + USB；Firefox/Safari 无 WebHID。
 - 本仓库 `zmk` 跟 `main` 分支，若上游改动破坏旧版 USB device stack 或事件 API，可能需要将 `config/west.yml` 里 `zmk` 与 `zmk-raw-hid` 固定到对应发布版本。
 - `zmk-raw-hid` 曾有“键盘→主机发送”方向的问题（Zephyr 旧 USB stack）；本功能只用“主机→键盘”方向，不受影响，但仍建议真机验证。
+
+## 实现中的关键发现
+
+这些是排查过程中确认的仓库现状，对后续维护很重要：
+
+1. **`config/planck.conf` 从未生效（死配置）。** ZMK 按 board 名加载 `<board>.conf`，而 board 名是 `planck_left` / `planck_right`，与文件名 `planck.conf` 都不匹配（keymap 用的是正确的 `planck_left.keymap`）。因此其中的 `CONFIG_PWM`、`CONFIG_RGBLED_WIDGET`、`CONFIG_ZMK_BATTERY_REPORTING` 等**一直没被编进固件**。
+2. **状态灯 widget 其实从未启用。** 由上一条，`rgbled-widget` 从未真正占用这 3 颗 LED——之前“被 widget 占用”的判断不成立。
+3. **`&tog_io` 当前点不亮灯。** `zmk-tog-io` 走 PWM（`pwm_set_dt`），需要 `CONFIG_PWM=y`，而该配置只在失效的 `planck.conf` 里，所以 BLE 层的 `&tog_io` 实际是空操作。
+4. **同一组引脚被同时声明为 PWM 与 GPIO LED。** `leds_left.dtsi` 里 `pwmleds`(pwm_led0..2) 与 `gpio-leds`(led0..2) 用的是同一批引脚（P0.09 / P1.06 / P1.04）。本方案不开 PWM、直接用 GPIO，避开了引脚归属冲突。
+5. **仓库根即 ZMK 模块的构建机制。** ZMK 的 `build-user-config.yml` 检测到仓库根有 `zephyr/module.yml` 时，会自动 `-DZMK_EXTRA_MODULES=<repo root>`，因此自研 C 代码可以直接放仓库根被编译，无需另开仓库。
+6. **Raw HID 方向可靠性不对称。** “主机→键盘”（本功能用到）经控制端点 `SET_REPORT` 稳定可用；“键盘→主机”在旧 USB stack 上有已知发送失败（-11）问题。
+7. **WebHID 仅 USB 可靠。** 见“已知限制”。
+
+## 后续可优化项（backlog）
+
+按价值/成本粗排，供后续迭代参考：
+
+- **清理死配置。** 把 `planck.conf` 里仍需要的项迁到 `planck_left.conf` / `planck_right.conf`，然后删除 `planck.conf`，消除“看着生效实则无效”的坑（另见 `docs/CLEANUP.md`）。
+- **亮度控制。** 现为纯开关。若接受用 PWM，可扩展协议加入每灯亮度（0–255），做呼吸/渐变。
+- **fail-safe / 心跳。** 可选：主机断开或一段时间无 report 后自动回到某个默认状态，避免“忘了关”。
+- **更丰富的下行协议。** 当前只有 `0xAB=设置`。可加入闪烁模式、单灯操作、查询等命令字。
+- **蓝牙控灯。** WebHID 下发到 BLE 键盘不可靠；若要蓝牙可控，需改为本地程序用系统 HID API 或走 BLE GATT，成本与不确定性较高。
+- **固定 ZMK 版本。** 目前 `zmk` / `zmk-raw-hid` 跟随 `main`，上游破坏性变更可能导致构建失败或行为变化。稳定后建议在 `config/west.yml` 固定到发布版本。
+- **对称支持右板。** 如需右板也能网页控灯，为 `planck_right` 建对应 `planck_right.conf` 并复用同一模块（模块已按 `CONFIG_PLANCK_LED_CONTROL` 守卫，右板默认不启用）。
+- **与 tog_io 收敛。** 既然 `&tog_io` 当前无效，可考虑移除 keymap 中的 `&tog_io`，统一由本模块管理 LED，避免概念重复。

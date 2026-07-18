@@ -11,27 +11,25 @@
         compatible = "zmk,keymap";
 
         LETTER {
-            // 右下第一个空位键（原 &mo 0 空占位）改为 &mo 1：按住进入 BLE 管理层
+            // 底排第一个键（&mo 1）：按住进入 BLE 管理层
             bindings = <
-&none  &none  &none  &none  &none  &none        &kp Y  &kp U  &kp I         &kp O            &kp P     &kp BACKSPACE
-&none  &none  &none  &none  &none  &none        &kp H  &kp J  &kp K         &kp L            &kp SEMI  &kp RETURN
-&none  &none  &none  &none  &none  &none        &kp N  &kp M  &kp COMMA     &kp DOT          &kp FSLH  &kp BACKSLASH
-                     &none  &none  &none  &none      &mo 1  &mo 0  &kp C_VOL_DN  &kp C_VOLUME_UP
+&kp Y  &kp U  &kp I      &kp O    &kp P     &kp BACKSPACE
+&kp H  &kp J  &kp K      &kp L    &kp SEMI  &kp RETURN
+&kp N  &kp M  &kp COMMA  &kp DOT  &kp FSLH  &kp BACKSLASH
+              &mo 1  &mo 0  &kp C_VOL_DN  &kp C_VOLUME_UP
             >;
 
-            sensor-bindings =
-                <&inc_dec_kp C_VOL_UP C_VOL_DN>,
-                <&inc_dec_kp C_VOLUME_DOWN C_VOLUME_UP>;
+            sensor-bindings = <&inc_dec_kp C_VOLUME_DOWN C_VOLUME_UP>;
 
             label = "LETTER";
         };
 
         BLE {
             bindings = <
-&none  &none  &none  &none  &none  &none        &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_CLR  &bt BT_CLR_ALL
-&none  &none  &none  &none  &none  &none        &tog_io 0     &tog_io 1     &tog_io 2     &trans        &trans      &trans
-&none  &none  &none  &none  &none  &none        &trans        &trans        &trans        &trans        &trans      &trans
-                     &none  &none  &none  &none      &trans        &trans        &trans        &trans
+&bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_CLR  &bt BT_CLR_ALL
+&tog_io 0     &tog_io 1     &tog_io 2     &trans        &trans      &trans
+&trans        &trans        &trans        &trans        &trans      &trans
+                            &trans        &trans        &trans      &trans
             >;
 
             label = "BLE";

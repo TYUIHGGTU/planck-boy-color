@@ -1,7 +1,7 @@
 ---
 include:
   - board: planck_left
-    snippet: nrf52840-nosd
+    snippet: nrf52840-nosd studio-rpc-usb-uart
   - board: planck_right
     snippet: nrf52840-nosd
 

@@ -1,6 +1,6 @@
 ---
 include:
+  # Left bootloader only accepts an application linked at 0x26000.
   - board: planck_left
-    snippet: nrf52840-nosd
   - board: planck_right
     snippet: nrf52840-nosd studio-rpc-usb-uart

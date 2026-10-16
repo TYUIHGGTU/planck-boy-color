@@ -54,7 +54,7 @@ These checks require the physical keyboard and cannot be inferred from source:
 
 ## Expected observations
 
-- Base layer: cyan status
+- Base layer: status LED off
 - CHAR layer: amber status
 - ARROW layer: blue status
 - BLE layer: magenta status

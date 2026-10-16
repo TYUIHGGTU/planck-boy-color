@@ -10,10 +10,13 @@ fn main() {
     println!("cargo:rerun-if-changed=keyboard.toml");
     println!("cargo:rerun-if-changed=vial.json");
     println!("cargo:rerun-if-changed=memory.x");
-
-    generate_vial_config();
+    println!("cargo:rerun-if-env-changed=CARGO_FEATURE_HW_R1");
+    println!("cargo:rerun-if-env-changed=CARGO_FEATURE_HW_R2");
 
     let out = PathBuf::from(env::var_os("OUT_DIR").expect("OUT_DIR is set by Cargo"));
+    generate_keyboard_config(&out);
+    generate_vial_config(&out);
+
     File::create(out.join("memory.x"))
         .expect("create generated memory.x")
         .write_all(include_bytes!("memory.x"))
@@ -24,9 +27,41 @@ fn main() {
     println!("cargo:rustc-link-arg=-Tdefmt.x");
 }
 
-fn generate_vial_config() {
-    let out_file = Path::new(&env::var_os("OUT_DIR").expect("OUT_DIR is set by Cargo"))
-        .join("config_generated.rs");
+fn generate_keyboard_config(out: &Path) {
+    let source = fs::read_to_string("keyboard.toml").expect("read keyboard.toml");
+    let is_r1 = env::var_os("CARGO_FEATURE_HW_R1").is_some()
+        && env::var_os("CARGO_FEATURE_HW_R2").is_none();
+    let mut in_keyboard_section = false;
+    let mut generated = String::with_capacity(source.len() + 32);
+
+    for line in source.lines() {
+        if line == "[keyboard]" {
+            in_keyboard_section = true;
+        } else if line.starts_with('[') {
+            in_keyboard_section = false;
+        }
+
+        let output_line = if is_r1 && in_keyboard_section && line.starts_with("name = ") {
+            r#"name = "PlanckBoyColor R1 RMK""#
+        } else if is_r1 && in_keyboard_section && line.starts_with("product_name = ") {
+            r#"product_name = "PlanckBoyColor R1 RMK""#
+        } else {
+            line
+        };
+        generated.push_str(output_line);
+        generated.push('\n');
+    }
+
+    let generated_path = out.join("keyboard.generated.toml");
+    fs::write(&generated_path, generated).expect("write revision keyboard.toml");
+    println!(
+        "cargo:rustc-env=KEYBOARD_TOML_PATH={}",
+        generated_path.display()
+    );
+}
+
+fn generate_vial_config(out: &Path) {
+    let out_file = out.join("config_generated.rs");
     let mut content = String::new();
     File::open("vial.json")
         .expect("open vial.json")

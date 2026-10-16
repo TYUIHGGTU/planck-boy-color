@@ -29,6 +29,9 @@ and r2. Only the RGB PWM channel order differs in the repository.
 Select exactly one feature for explicit builds. The build fails if both or
 neither are selected.
 
+The r1 central advertises as `PlanckBoyColor R1 RMK`. The r2 name remains
+`PlanckBoy Color`.
+
 ## Prerequisites
 
 Install Rust through rustup. The repository pins the target and LLVM tools in
@@ -111,6 +114,20 @@ RMK uses `User` actions for wireless management:
 The old ZMK discovery keys map to the corresponding profile key because RMK
 performs clear-and-pair through a long hold. RGB and external-power positions
 are `No` because the original repository does not define that hardware.
+
+## Bluetooth discovery troubleshooting
+
+- Only the RMK `central` image advertises to phones and computers. The
+  `peripheral` image only searches for its central half and will never appear
+  in the host's Bluetooth device list.
+- Flashing UF2 does not erase the storage partition. Remove the old keyboard
+  from the host, activate the BLE layer, then hold the desired `User0` to
+  `User2` profile key for five seconds to clear that bond and advertise again.
+- Ensure both halves use the same framework and hardware revision. Power-cycle
+  both halves after flashing.
+- If r2 advertises on the same physical board but r1 does not, capture a defmt
+  log or erase RMK storage before changing radio settings; r1/r2 currently use
+  identical BLE, DCDC, TX-power, PHY, matrix, and battery configuration.
 
 ## Current compatibility differences
 

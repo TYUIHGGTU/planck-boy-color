@@ -160,6 +160,16 @@ def main() -> int:
         {"hw-r1", "hw-r2"}.issubset(cargo["features"]),
         "Cargo hardware revision features are incomplete",
     )
+    build_script = (ROOT / "build.rs").read_text()
+    require(
+        'name = "PlanckBoyColor R1 RMK"' in build_script
+        and 'product_name = "PlanckBoyColor R1 RMK"' in build_script,
+        "r1 Bluetooth product name override is missing",
+    )
+    require(
+        "cargo:rustc-env=KEYBOARD_TOML_PATH=" in build_script,
+        "generated revision keyboard config is not exported to RMK",
+    )
 
     raw_config = (ROOT / "keyboard.toml").read_text().lower()
     require("rgb_ug" not in raw_config, "undocumented underglow must stay disabled")

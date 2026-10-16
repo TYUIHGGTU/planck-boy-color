@@ -6,10 +6,18 @@ Run:
 
 ```sh
 python3 tests/validate_config.py
+python3 tests/validate_hardware_revisions.py
 cargo fmt --check
-cargo build --release --bin central --bin peripheral
-cargo make uf2
-python3 tests/validate_artifacts.py
+
+cargo build --release --bin central --bin peripheral \
+  --no-default-features --features hw-r1
+RMK_REVISION=r1 cargo make uf2
+python3 tests/validate_artifacts.py --revision r1
+
+cargo build --release --bin central --bin peripheral \
+  --no-default-features --features hw-r2
+RMK_REVISION=r2 cargo make uf2
+python3 tests/validate_artifacts.py --revision r2
 ```
 
 The static validator compares RMK's direct-pin order against the ZMK
@@ -18,12 +26,17 @@ pin ownership, and rejects accidental `rgb_ug` or `ext_power` claims. The
 artifact validator checks UF2 framing, nRF52840 family IDs, block numbering,
 and application address ranges.
 
+The revision validator derives each color's PWM channel from the ZMK DTSI and
+compares it with the corresponding RMK profile. It also confirms that all 46
+switch inputs remain active-low with pull-ups in both revisions.
+
 ## First hardware bring-up
 
 These checks require the physical keyboard and cannot be inferred from source:
 
 - Confirm the UF2 bootloader accepts an application beginning at `0x1000`.
 - Confirm both halves can be recovered through UF2 or SWD before testing sleep.
+- Repeat the matrix test with both the r1 and r2 firmware for the matching PCB.
 - In Vial matrix test, press all 44 visible keys and both encoder push switches.
 - Confirm the encoder pushes produce the same actions as the former ZMK
   composite positions.
@@ -35,7 +48,8 @@ These checks require the physical keyboard and cannot be inferred from source:
 - Verify left and right Battery Service values are plausible.
 - Let the keyboard enter idle sleep, then wake it from every half and record
   latency and current.
-- Verify RGB channel order, layer colors, and sleep-off behavior on each half.
+- Verify RGB channel order, layer colors, and sleep-off behavior on each half
+  for both revision-specific firmware packages.
 - Exercise all four layers and nine combos after clearing persisted storage.
 
 ## Expected observations

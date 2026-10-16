@@ -1,0 +1,2 @@
+#include "planck_left_common.dtsi"
+#include "revisions/r1/leds_left.dtsi"

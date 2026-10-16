@@ -1,0 +1,2 @@
+#include "planck_right_common.dtsi"
+#include "revisions/r2/leds_right.dtsi"

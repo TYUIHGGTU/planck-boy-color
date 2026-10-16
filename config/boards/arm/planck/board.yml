@@ -7,3 +7,19 @@ boards:
     vendor: modifier_key
     socs:
       - name: nrf52840
+  - name: planck_left_r1
+    vendor: modifier_key
+    socs:
+      - name: nrf52840
+  - name: planck_right_r1
+    vendor: modifier_key
+    socs:
+      - name: nrf52840
+  - name: planck_left_r2
+    vendor: modifier_key
+    socs:
+      - name: nrf52840
+  - name: planck_right_r2
+    vendor: modifier_key
+    socs:
+      - name: nrf52840

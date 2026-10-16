@@ -18,6 +18,17 @@ half is the BLE central and USB device; the right half is BLE peripheral 0.
 The encoder push switches are separate inputs in RMK. Their actions duplicate
 the ZMK composite positions that they previously shared.
 
+## Hardware revisions
+
+The matrix, encoders, keymap, battery input, and flash layout are shared by r1
+and r2. Only the RGB PWM channel order differs in the repository.
+
+- `hw-r1`: mirrors `config/boards/arm/planck/revisions/r1`
+- `hw-r2`: mirrors `config/boards/arm/planck/revisions/r2` and is the default
+
+Select exactly one feature for explicit builds. The build fails if both or
+neither are selected.
+
 ## Prerequisites
 
 Install Rust through rustup. The repository pins the target and LLVM tools in
@@ -40,27 +51,39 @@ From this directory:
 
 ```sh
 python3 tests/validate_config.py
+python3 tests/validate_hardware_revisions.py
 cargo fmt --check
-cargo build --release --bin central --bin peripheral
-cargo make uf2
-python3 tests/validate_artifacts.py
+
+cargo build --release --bin central --bin peripheral \
+  --no-default-features --features hw-r1
+RMK_REVISION=r1 cargo make uf2
+python3 tests/validate_artifacts.py --revision r1
+
+cargo build --release --bin central --bin peripheral \
+  --no-default-features --features hw-r2
+RMK_REVISION=r2 cargo make uf2
+python3 tests/validate_artifacts.py --revision r2
 ```
 
 Generated files:
 
 - `target/thumbv7em-none-eabihf/release/central`
 - `target/thumbv7em-none-eabihf/release/peripheral`
-- `planck-boy-color-central.hex`
-- `planck-boy-color-central.uf2`
-- `planck-boy-color-peripheral.hex`
-- `planck-boy-color-peripheral.uf2`
+- `planck-boy-color-rmk-r1-central.{hex,uf2}`
+- `planck-boy-color-rmk-r1-peripheral.{hex,uf2}`
+- `planck-boy-color-rmk-r2-central.{hex,uf2}`
+- `planck-boy-color-rmk-r2-peripheral.{hex,uf2}`
+
+GitHub Actions also publishes `planck-boy-color-zmk-r1`,
+`planck-boy-color-zmk-r2`, `planck-boy-color-rmk-r1`, and
+`planck-boy-color-rmk-r2` artifacts in one workflow run.
 
 ## Flashing
 
 1. Keep a known-good ZMK UF2 and an SWD probe available for first bring-up.
 2. Put only the target half into its UF2 bootloader.
-3. Flash `planck-boy-color-central.uf2` to the left half and
-   `planck-boy-color-peripheral.uf2` to the right half.
+3. Choose the artifact matching the PCB revision. Flash its `central` image to
+   the left half and its `peripheral` image to the right half.
 4. Reboot both halves. Clear stored split peers if they do not discover each
    other after a firmware change.
 5. Clear RMK storage after changing the compiled default keymap, otherwise a

@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+import argparse
+import os
 import struct
 import sys
 from pathlib import Path
@@ -60,9 +62,20 @@ def validate_uf2(path: Path) -> tuple[int, int, int]:
     return expected_blocks, image_start, image_end
 
 
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--revision",
+        choices=("r1", "r2"),
+        default=os.environ.get("RMK_REVISION", "r2"),
+    )
+    return parser.parse_args()
+
+
 def main() -> int:
+    revision = parse_args().revision
     for half in ("central", "peripheral"):
-        stem = f"planck-boy-color-{half}"
+        stem = f"planck-boy-color-rmk-{revision}-{half}"
         hex_path = ROOT / f"{stem}.hex"
         uf2_path = ROOT / f"{stem}.uf2"
         if not hex_path.is_file():

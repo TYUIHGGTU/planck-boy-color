@@ -5,6 +5,11 @@ edition = "2024"
 license = "MIT"
 publish = false
 
+[features]
+default = ["hw-r2"]
+hw-r1 = []
+hw-r2 = []
+
 [[bin]]
 name = "central"
 path = "src/central.rs"

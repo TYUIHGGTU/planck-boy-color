@@ -150,12 +150,16 @@ def main() -> int:
         "expected three retained tap-dance definitions",
     )
 
-    central_source = (ROOT / "src" / "central.rs").read_text()
-    peripheral_source = (ROOT / "src" / "peripheral.rs").read_text()
-    for pin in ("P1_06", "P1_04", "P0_09"):
-        require(pin in central_source, f"left RGB pin {pin} is missing")
-    for pin in ("P1_07", "P1_05", "P1_03"):
-        require(pin in peripheral_source, f"right RGB pin {pin} is missing")
+    with (ROOT / "Cargo.toml").open("rb") as cargo_file:
+        cargo = tomllib.load(cargo_file)
+    require(
+        cargo["features"]["default"] == ["hw-r2"],
+        "default hardware revision must remain r2",
+    )
+    require(
+        {"hw-r1", "hw-r2"}.issubset(cargo["features"]),
+        "Cargo hardware revision features are incomplete",
+    )
 
     raw_config = (ROOT / "keyboard.toml").read_text().lower()
     require("rgb_ug" not in raw_config, "undocumented underglow must stay disabled")

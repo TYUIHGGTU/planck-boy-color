@@ -1,3 +1,6 @@
+[env]
+RMK_REVISION = { value = "r2", condition = { env_not_set = ["RMK_REVISION"] } }
+
 [tasks.install-llvm-tools]
 install_crate = { rustup_component_name = "llvm-tools" }
 
@@ -11,10 +14,13 @@ args = [
     "--release",
     "--bin",
     "central",
+    "--no-default-features",
+    "--features",
+    "hw-${RMK_REVISION}",
     "--",
     "-O",
     "ihex",
-    "planck-boy-color-central.hex",
+    "planck-boy-color-rmk-${RMK_REVISION}-central.hex",
 ]
 dependencies = ["install-llvm-tools", "flip-link"]
 install_crate = { crate_name = "cargo-binutils", binary = "cargo", test_arg = [
@@ -29,10 +35,13 @@ args = [
     "--release",
     "--bin",
     "peripheral",
+    "--no-default-features",
+    "--features",
+    "hw-${RMK_REVISION}",
     "--",
     "-O",
     "ihex",
-    "planck-boy-color-peripheral.hex",
+    "planck-boy-color-rmk-${RMK_REVISION}-peripheral.hex",
 ]
 dependencies = ["install-llvm-tools", "flip-link"]
 install_crate = { crate_name = "cargo-binutils", binary = "cargo", test_arg = [
@@ -45,9 +54,9 @@ command = "cargo"
 args = [
     "hex-to-uf2",
     "--input-path",
-    "planck-boy-color-central.hex",
+    "planck-boy-color-rmk-${RMK_REVISION}-central.hex",
     "--output-path",
-    "planck-boy-color-central.uf2",
+    "planck-boy-color-rmk-${RMK_REVISION}-central.uf2",
     "--family",
     "nrf52840",
 ]
@@ -62,9 +71,9 @@ command = "cargo"
 args = [
     "hex-to-uf2",
     "--input-path",
-    "planck-boy-color-peripheral.hex",
+    "planck-boy-color-rmk-${RMK_REVISION}-peripheral.hex",
     "--output-path",
-    "planck-boy-color-peripheral.uf2",
+    "planck-boy-color-rmk-${RMK_REVISION}-peripheral.uf2",
     "--family",
     "nrf52840",
 ]

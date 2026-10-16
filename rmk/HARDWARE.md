@@ -13,6 +13,10 @@ and RMK. GPIO names use Embassy's nRF52 spelling.
 - USB: enabled on the central
 - DCDC REG0 and REG1: enabled, matching the ZMK board configuration
 
+The `origin/r1` and r2 sources use the same direct-pin GPIOs and the same
+`GPIO_ACTIVE_LOW | GPIO_PULL_UP` flags. There is currently no source evidence
+for a switch-polarity difference between revisions.
+
 ## Flash layout
 
 - `0x00000000..0x00001000`: MBR/reserved
@@ -72,6 +76,16 @@ Both halves use nRF PWM0 with inverted polarity.
 
 - Left channels: blue `P0_09`, red `P1_06`, green `P1_04`
 - Right channels: blue `P1_03`, red `P1_05`, green `P1_07`
+
+The physical color pins are shared, but the ZMK PWM channel order differs:
+
+- r1 left: blue, red, green; r1 right: blue, green, red
+- r2 left: red, green, blue; r2 right: green, red, blue
+
+ZMK stores these mappings under
+`config/boards/arm/planck/revisions/{r1,r2}`. RMK mirrors them through the
+mutually exclusive `hw-r1` and `hw-r2` Cargo features. The default feature is
+`hw-r2` for compatibility with the previously validated firmware.
 
 The RMK processor displays the active layer and turns the LED off for a sleep
 event. It does not implement the ZMK `rgb_ug` actions: the repository contains

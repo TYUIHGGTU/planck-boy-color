@@ -1,0 +1,8 @@
+---
+include:
+  - board: planck_left_r1
+    snippet: nrf52840-nosd
+    artifact-name: planck-boy-color-zmk-r1-left
+  - board: planck_right_r1
+    snippet: nrf52840-nosd
+    artifact-name: planck-boy-color-zmk-r1-right

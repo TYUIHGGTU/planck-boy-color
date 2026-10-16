@@ -1,0 +1,8 @@
+---
+include:
+  - board: planck_left_r2
+    snippet: nrf52840-nosd studio-rpc-usb-uart
+    artifact-name: planck-boy-color-zmk-r2-left
+  - board: planck_right_r2
+    snippet: nrf52840-nosd
+    artifact-name: planck-boy-color-zmk-r2-right

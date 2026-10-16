@@ -1,11 +1,92 @@
-name: Build ZMK firmware
+name: Build all firmware
+
 on:
   workflow_dispatch:
   push:
     paths:
+      - ".github/workflows/build.yml"
+      - "build/**"
+      - "build.yaml"
       - config/**
-      - build.yaml
+      - "rmk/**"
+  pull_request:
+    paths:
+      - ".github/workflows/build.yml"
+      - "build/**"
+      - "build.yaml"
+      - config/**
+      - "rmk/**"
 
 jobs:
-  build:
+  zmk-r1:
     uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@main
+    with:
+      archive_name: planck-boy-color-zmk-r1
+      build_matrix_path: build/zmk/r1.yaml
+
+  zmk-r2:
+    uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@main
+    with:
+      archive_name: planck-boy-color-zmk-r2
+      build_matrix_path: build/zmk/r2.yaml
+
+  rmk:
+    name: RMK ${{ matrix.revision }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        revision: [r1, r2]
+    defaults:
+      run:
+        working-directory: rmk
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ARM C compiler
+        run: sudo apt-get update && sudo apt-get install -y gcc-arm-none-eabi
+
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: llvm-tools
+          target: thumbv7em-none-eabihf
+          toolchain: stable
+
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-binutils,cargo-hex-to-uf2,cargo-make,flip-link
+
+      - name: Validate shared and revision hardware
+        run: |
+          python3 tests/validate_config.py
+          python3 tests/validate_hardware_revisions.py
+
+      - name: Check formatting
+        run: cargo fmt --check
+
+      - name: Build both halves
+        run: >-
+          cargo build --locked --release
+          --bin central --bin peripheral
+          --no-default-features
+          --features hw-${{ matrix.revision }}
+
+      - name: Package HEX and UF2
+        env:
+          RMK_REVISION: ${{ matrix.revision }}
+        run: cargo make uf2
+
+      - name: Validate UF2 address ranges
+        run: python3 tests/validate_artifacts.py --revision ${{ matrix.revision }}
+
+      - name: Upload firmware
+        uses: actions/upload-artifact@v4
+        with:
+          name: planck-boy-color-rmk-${{ matrix.revision }}
+          path: |
+            rmk/planck-boy-color-rmk-${{ matrix.revision }}-central.hex
+            rmk/planck-boy-color-rmk-${{ matrix.revision }}-central.uf2
+            rmk/planck-boy-color-rmk-${{ matrix.revision }}-peripheral.hex
+            rmk/planck-boy-color-rmk-${{ matrix.revision }}-peripheral.uf2
+          if-no-files-found: error

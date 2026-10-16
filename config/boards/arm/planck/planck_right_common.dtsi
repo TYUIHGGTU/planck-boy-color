@@ -1,0 +1,70 @@
+#include "planck.dtsi"
+
+&default_transform {
+    col-offset = <22>;
+};
+
+&right_encoder {
+    status = "okay";
+};
+
+&matrix_physical_layout {
+    kscan = <&kscan0>;
+};
+
+/ {
+    chosen {
+        zmk,physical-layout = &matrix_physical_layout;
+    };
+
+    kscan0: kscan_composite {
+        compatible = "zmk,kscan-composite";
+        columns = <50>;
+        wakeup-source;
+
+        matrix {
+            kscan = <&kscan1>;
+        };
+
+        encoder {
+            kscan = <&kscan2>;
+            row-offset = <0>;
+            col-offset = <21>;
+        };
+    };
+
+    kscan1: kscan {
+        compatible = "zmk,kscan-gpio-direct";
+        wakeup-source;
+        input-gpios
+            = <&gpio1 10 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
+            , <&gpio1 13 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
+            , <&gpio1 15 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
+            , <&gpio0 2 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
+            , <&gpio0 29 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
+            , <&gpio0 31 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
+            , <&gpio1 11 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
+            , <&gpio0 26 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
+            , <&gpio0 4 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
+            , <&gpio0 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
+            , <&gpio0 8 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
+            , <&gpio1 9 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
+            , <&gpio1 4 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
+            , <&gpio1 1 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
+            , <&gpio0 20 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
+            , <&gpio0 7 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
+            , <&gpio1 8 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
+            , <&gpio0 11 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
+            , <&gpio1 2 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
+            , <&gpio1 0 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
+            , <&gpio0 17 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
+            , <&gpio0 15 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
+            ;
+    };
+
+    kscan2: kscan_encoder {
+        compatible = "zmk,kscan-gpio-direct";
+        wakeup-source;
+        input-gpios = <&gpio0 13 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+    };
+};

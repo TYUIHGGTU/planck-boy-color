@@ -3,10 +3,19 @@
 # Copyright (c) 2020 The ZMK Contributors
 # SPDX-License-Identifier: MIT
 
-if BOARD_PLANCK_LEFT || BOARD_PLANCK_LEFT_R1 || BOARD_PLANCK_LEFT_R2
+if BOARD_PLANCK_LEFT_R1
 
 config ZMK_KEYBOARD_NAME
-		default "PlanckBoy Color"
+		default "PBC Z1"
+
+config ZMK_SPLIT_ROLE_CENTRAL
+		default y
+endif
+
+if BOARD_PLANCK_LEFT || BOARD_PLANCK_LEFT_R2
+
+config ZMK_KEYBOARD_NAME
+		default "PBC Z2"
 
 config ZMK_SPLIT_ROLE_CENTRAL
 		default y

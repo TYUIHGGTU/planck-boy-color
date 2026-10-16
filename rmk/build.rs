@@ -29,8 +29,7 @@ fn main() {
 
 fn generate_keyboard_config(out: &Path) {
     let source = fs::read_to_string("keyboard.toml").expect("read keyboard.toml");
-    let is_r1 = env::var_os("CARGO_FEATURE_HW_R1").is_some()
-        && env::var_os("CARGO_FEATURE_HW_R2").is_none();
+    let is_r1 = is_r1_build();
     let mut in_keyboard_section = false;
     let mut generated = String::with_capacity(source.len() + 32);
 
@@ -42,9 +41,9 @@ fn generate_keyboard_config(out: &Path) {
         }
 
         let output_line = if is_r1 && in_keyboard_section && line.starts_with("name = ") {
-            r#"name = "PlanckBoyColor R1 RMK""#
+            r#"name = "PBC R1""#
         } else if is_r1 && in_keyboard_section && line.starts_with("product_name = ") {
-            r#"product_name = "PlanckBoyColor R1 RMK""#
+            r#"product_name = "PBC R1""#
         } else {
             line
         };
@@ -67,6 +66,9 @@ fn generate_vial_config(out: &Path) {
         .expect("open vial.json")
         .read_to_string(&mut content)
         .expect("read vial.json");
+    if is_r1_build() {
+        content = content.replacen("PBC R2", "PBC R1", 1);
+    }
 
     let vial_config = json::stringify(json::parse(&content).expect("parse vial.json"));
     let mut keyboard_def_compressed = Vec::new();
@@ -86,4 +88,8 @@ fn generate_vial_config(out: &Path) {
     .join("\n");
 
     fs::write(out_file, declarations).expect("write generated Vial configuration");
+}
+
+fn is_r1_build() -> bool {
+    env::var_os("CARGO_FEATURE_HW_R1").is_some() && env::var_os("CARGO_FEATURE_HW_R2").is_none()
 }

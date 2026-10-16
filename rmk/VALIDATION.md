@@ -43,8 +43,8 @@ These checks require the physical keyboard and cannot be inferred from source:
 - Turn both encoders one detent in each direction and verify volume direction.
 - Pair all three host profiles; test profile selection, long-hold re-pair,
   next/previous profile, and current-profile clear.
-- Confirm only the central advertises to the host and that r1 appears as
-  `PlanckBoyColor R1 RMK`.
+- Confirm only the central advertises to the host and that the names are
+  `PBC R1` for r1 and `PBC R2` for r2.
 - Unplug USB and verify central-to-host BLE input from both halves.
 - Power-cycle one half at a time and verify automatic split reconnection.
 - Verify left and right Battery Service values are plausible.

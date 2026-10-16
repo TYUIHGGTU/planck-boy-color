@@ -29,8 +29,10 @@ and r2. Only the RGB PWM channel order differs in the repository.
 Select exactly one feature for explicit builds. The build fails if both or
 neither are selected.
 
-The r1 central advertises as `PlanckBoyColor R1 RMK`. The r2 name remains
-`PlanckBoy Color`.
+The RMK central names follow the hardware revision:
+
+- r1: `PBC R1`
+- r2: `PBC R2`
 
 ## Prerequisites
 
@@ -117,6 +119,8 @@ are `No` because the original repository does not define that hardware.
 
 ## Bluetooth discovery troubleshooting
 
+- RMK 0.9's legacy host advertisement has room for at most 16 name bytes after
+  its required fields. A longer product name prevents advertising entirely.
 - Only the RMK `central` image advertises to phones and computers. The
   `peripheral` image only searches for its central half and will never appear
   in the host's Bluetooth device list.

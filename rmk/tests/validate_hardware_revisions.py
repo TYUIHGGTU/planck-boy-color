@@ -104,8 +104,13 @@ def main() -> int:
         )
 
     board_yml = (BOARD / "board.yml").read_text()
+    kconfig = (BOARD / "Kconfig.defconfig").read_text()
     for revision in ("r1", "r2"):
         validate_revision(revision)
+        require(
+            f'default "PBC Z{revision[1]}"' in kconfig,
+            f"ZMK {revision} Bluetooth name is incorrect",
+        )
         build_matrix = (ROOT / "build" / "zmk" / f"{revision}.yaml").read_text()
         for side in ("left", "right"):
             board_name = f"planck_{side}_{revision}"

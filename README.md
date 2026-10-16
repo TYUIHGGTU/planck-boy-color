@@ -17,6 +17,13 @@ Each artifact contains separate left/right images. ZMK calls them `left` and
 
 Do not mix revisions or firmware frameworks between halves.
 
+Bluetooth device names:
+
+- RMK r1: `PBC R1`
+- RMK r2: `PBC R2`
+- ZMK r1: `PBC Z1`
+- ZMK r2: `PBC Z2`
+
 ## Source layout
 
 - `config/`: shared ZMK keymap and board configuration

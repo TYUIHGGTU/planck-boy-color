@@ -1,6 +1,6 @@
 [keyboard]
-name = "PlanckBoy Color"
-product_name = "PlanckBoy Color"
+name = "PBC R2"
+product_name = "PBC R2"
 manufacturer = "Modifier Key"
 # Development VID/PID. Replace with an assigned pair before distribution.
 vendor_id = 0x4C4B

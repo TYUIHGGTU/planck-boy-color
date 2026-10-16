@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import json
 import sys
 import tomllib
 from pathlib import Path
@@ -161,11 +162,24 @@ def main() -> int:
         "Cargo hardware revision features are incomplete",
     )
     build_script = (ROOT / "build.rs").read_text()
+    r1_name = "PBC R1"
+    r2_name = "PBC R2"
     require(
-        'name = "PlanckBoyColor R1 RMK"' in build_script
-        and 'product_name = "PlanckBoyColor R1 RMK"' in build_script,
+        f'name = "{r1_name}"' in build_script
+        and f'product_name = "{r1_name}"' in build_script,
         "r1 Bluetooth product name override is missing",
     )
+    require(
+        config["keyboard"]["name"] == r2_name
+        and config["keyboard"]["product_name"] == r2_name,
+        "r2 keyboard product name is incorrect",
+    )
+    require(
+        max(len(r1_name.encode()), len(r2_name.encode())) <= 16,
+        "RMK 0.9 host advertising allows at most 16 name bytes",
+    )
+    vial_name = json.loads((ROOT / "vial.json").read_text())["name"]
+    require(vial_name == r2_name, "r2 Vial name is incorrect")
     require(
         "cargo:rustc-env=KEYBOARD_TOML_PATH=" in build_script,
         "generated revision keyboard config is not exported to RMK",

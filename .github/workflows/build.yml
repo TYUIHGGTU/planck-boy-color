@@ -25,6 +25,7 @@ jobs:
       build_matrix_path: build/zmk/r1.yaml
 
   zmk-r2:
+    needs: zmk-r1
     uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@main
     with:
       archive_name: planck-boy-color-zmk-r2
@@ -42,7 +43,7 @@ jobs:
         working-directory: rmk
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Install ARM C compiler
         run: sudo apt-get update && sudo apt-get install -y gcc-arm-none-eabi

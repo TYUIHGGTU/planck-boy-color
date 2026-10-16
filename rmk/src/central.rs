@@ -8,10 +8,8 @@ use rmk::macros::rmk_central;
 
 #[rmk_central]
 mod keyboard_central {
-    use crate::rgb_pwm::RgbPwmProcessor;
-
     #[register_processor(event)]
-    fn rgb_status() -> RgbPwmProcessor {
+    fn rgb_status() -> crate::rgb_pwm::RgbPwmProcessor {
         crate::revisions::selected::central_processor!(p)
     }
 }

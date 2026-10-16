@@ -1,3 +1,4 @@
+#[allow(unused_macros)]
 macro_rules! central_processor {
     ($p:ident) => {{
         let config = embassy_nrf::pwm::SimpleConfig::default();
@@ -14,6 +15,7 @@ macro_rules! central_processor {
     }};
 }
 
+#[allow(unused_macros)]
 macro_rules! peripheral_processor {
     ($p:ident) => {{
         let config = embassy_nrf::pwm::SimpleConfig::default();
@@ -30,5 +32,7 @@ macro_rules! peripheral_processor {
     }};
 }
 
+#[allow(unused_imports)]
 pub(crate) use central_processor;
+#[allow(unused_imports)]
 pub(crate) use peripheral_processor;

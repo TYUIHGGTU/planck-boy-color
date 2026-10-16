@@ -1,0 +1,61 @@
+name: Build RMK firmware
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/rmk-build.yml"
+      - "rmk/**"
+  pull_request:
+    paths:
+      - ".github/workflows/rmk-build.yml"
+      - "rmk/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: rmk
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ARM C compiler
+        run: sudo apt-get update && sudo apt-get install -y gcc-arm-none-eabi
+
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: llvm-tools
+          target: thumbv7em-none-eabihf
+          toolchain: stable
+
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-binutils,cargo-hex-to-uf2,cargo-make,flip-link
+
+      - name: Validate translated hardware
+        run: python3 tests/validate_config.py
+
+      - name: Check formatting
+        run: cargo fmt --check
+
+      - name: Build both halves
+        run: cargo build --locked --release --bin central --bin peripheral
+
+      - name: Package HEX and UF2
+        run: cargo make uf2
+
+      - name: Validate UF2 address ranges
+        run: python3 tests/validate_artifacts.py
+
+      - name: Upload firmware
+        uses: actions/upload-artifact@v4
+        with:
+          name: planck-boy-color-rmk
+          path: |
+            rmk/planck-boy-color-central.hex
+            rmk/planck-boy-color-central.uf2
+            rmk/planck-boy-color-peripheral.hex
+            rmk/planck-boy-color-peripheral.uf2
+          if-no-files-found: error

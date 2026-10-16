@@ -1,0 +1,85 @@
+[package]
+name = "planck-boy-color-rmk"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+publish = false
+
+[[bin]]
+name = "central"
+path = "src/central.rs"
+
+[[bin]]
+name = "peripheral"
+path = "src/peripheral.rs"
+
+[dependencies]
+rmk = { version = "=0.9.0", default-features = false, features = [
+    "adafruit_bl",
+    "async_matrix",
+    "defmt",
+    "display",
+    "nrf52840_ble",
+    "split",
+    "storage",
+    "subrating",
+    "vial",
+    "watchdog",
+] }
+bt-hci = { version = "0.10", features = ["defmt"] }
+cortex-m = "0.7.7"
+cortex-m-rt = "0.7.5"
+defmt = "1"
+defmt-rtt = "1"
+embassy-executor = { version = "0.10", features = [
+    "defmt",
+    "executor-thread",
+    "platform-cortex-m",
+] }
+embassy-nrf = { version = "0.11", features = [
+    "defmt",
+    "gpiote",
+    "nfc-pins-as-gpio",
+    "nrf52840",
+    "time",
+    "time-driver-rtc1",
+    "unstable-pac",
+] }
+embassy-time = { version = "0.5", features = [
+    "defmt",
+    "defmt-timestamp-uptime",
+    "tick-hz-32_768",
+] }
+nrf-mpsl = { version = "0.4.0", features = [
+    "critical-section-impl",
+    "defmt",
+    "nrf52840",
+] }
+nrf-sdc = { version = "0.4.0", features = [
+    "central",
+    "defmt",
+    "nrf52840",
+    "peripheral",
+] }
+panic-probe = { version = "1", features = ["print-defmt"] }
+static_cell = "2"
+
+[build-dependencies]
+const-gen = "1.6"
+json = "0.12"
+xz2 = "0.1.7"
+
+[profile.dev]
+codegen-units = 1
+debug = true
+lto = false
+opt-level = 1
+overflow-checks = true
+panic = "unwind"
+
+[profile.release]
+codegen-units = 1
+debug = true
+lto = "fat"
+opt-level = "z"
+overflow-checks = false

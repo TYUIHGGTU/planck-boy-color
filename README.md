@@ -1,41 +1,36 @@
-# PlanckBoy Color firmware
+# PlanckBoy Color 固件
 
-This repository builds ZMK and RMK firmware for PlanckBoy Color hardware
-revisions r1 and r2.
+本仓库为 PlanckBoy Color 硬件版本 r1 与 r2 构建 ZMK 和 RMK 固件。
 
-## Build outputs
+## 构建产物
 
-One GitHub Actions run publishes four artifacts:
+一次 GitHub Actions 运行会发布四个产物：
 
 - `planck-boy-color-zmk-r1`
 - `planck-boy-color-zmk-r2`
 - `planck-boy-color-rmk-r1`
 - `planck-boy-color-rmk-r2`
 
-Each artifact contains separate left/right images. ZMK calls them `left` and
-`right`; RMK calls them `central` and `peripheral`.
+每个产物都包含独立的左/右镜像。ZMK 称之为 `left` 和 `right`；RMK 称之为 `central` 和 `peripheral`。
 
-Do not mix revisions or firmware frameworks between halves.
+不要在左右两半之间混用不同版本或不同固件框架。
 
-Bluetooth device names:
+蓝牙设备名称：
 
-- RMK r1: `PBC R1`
-- RMK r2: `PBC R2`
-- ZMK r1: `PBC Z1`
-- ZMK r2: `PBC Z2`
+- RMK r1：`PBC R1`
+- RMK r2：`PBC R2`
+- ZMK r1：`PBC Z1`
+- ZMK r2：`PBC Z2`
 
-## Source layout
+## 源码布局
 
-- `config/`: shared ZMK keymap and board configuration
-- `config/boards/arm/planck/revisions/r1`: r1 RGB PWM mapping
-- `config/boards/arm/planck/revisions/r2`: r2 RGB PWM mapping
-- `build/zmk/r1.yaml`, `build/zmk/r2.yaml`: ZMK build matrices
-- `rmk/`: shared RMK firmware
-- `rmk/src/revisions/r1.rs`, `rmk/src/revisions/r2.rs`: RMK RGB profiles
+- `config/`：共享的 ZMK 键位与板级配置
+- `config/boards/arm/planck/revisions/r1`：r1 RGB PWM 映射
+- `config/boards/arm/planck/revisions/r2`：r2 RGB PWM 映射
+- `build/zmk/r1.yaml`、`build/zmk/r2.yaml`：ZMK 构建矩阵
+- `rmk/`：共享的 RMK 固件
+- `rmk/src/revisions/r1.rs`、`rmk/src/revisions/r2.rs`：RMK RGB 配置
 
-The two revisions share the same key matrix, active-low switch wiring,
-encoders, battery measurement, keymap, and flash layout. The repository only
-shows a difference in RGB PWM channel order. r2 ZMK additionally enables the
-USB ZMK Studio transport on the left half.
+两个版本共用同一套按键矩阵、低电平有效的开关接线、编码器、电池测量、键位以及 Flash 布局。仓库中唯一可见的差异是 RGB PWM 通道顺序。r2 的 ZMK 还会在左半边额外启用 USB ZMK Studio 传输。
 
-For RMK build and flashing instructions, see `rmk/README.md`.
+RMK 的构建与烧录说明见 `rmk/README.md`。

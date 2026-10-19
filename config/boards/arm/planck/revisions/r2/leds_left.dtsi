@@ -17,8 +17,9 @@
     };
 };
 
+/* Disabled so gpio-leds owns these pins. Keep the NRF_PSEL text for the RMK revision check. */
 &pwm0 {
-    status = "okay";
+    status = "disabled";
     pinctrl-0 = <&pwm0_default_led>;
     pinctrl-1 = <&pwm0_sleep_led>;
     pinctrl-names = "default", "sleep";
@@ -27,6 +28,7 @@
 / {
     pwmleds {
         compatible = "pwm-leds";
+        status = "disabled";
 
         pwm_led0: led_0 {
             pwms = <&pwm0 0 0 PWM_POLARITY_INVERTED>;
@@ -55,15 +57,15 @@
         status = "okay";
 
         led0: led_0 {
-            gpios = <&gpio0 9 GPIO_ACTIVE_HIGH>;
+            gpios = <&gpio0 9 GPIO_ACTIVE_LOW>;
         };
 
         led1: led_1 {
-            gpios = <&gpio1 6 GPIO_ACTIVE_HIGH>;
+            gpios = <&gpio1 6 GPIO_ACTIVE_LOW>;
         };
 
         led2: led_2 {
-            gpios = <&gpio1 4 GPIO_ACTIVE_HIGH>;
+            gpios = <&gpio1 4 GPIO_ACTIVE_LOW>;
         };
     };
 };

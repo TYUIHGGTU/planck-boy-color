@@ -78,7 +78,7 @@ RMK 使用状态灯表示当前层：
 - BLE 层：紫色
 - 休眠：关闭
 
-RMK 没有实现 ZMK 键图中的 `rgb_ug` 底灯和 `ext_power` 外设电源控制，因为原仓库没有对应的硬件节点。ZMK 固件仍保留原来的 RGBLED Widget 和 PWM 配置，这些行为没有被 RMK 改造移除。
+RMK 没有实现 ZMK 键图中的 `rgb_ug` 底灯和 `ext_power` 外设电源控制，因为原仓库没有对应的硬件节点。ZMK 用 RGBLED Widget 经 `gpio-leds` 驱动状态灯，对应的 PWM 节点保持关闭，避免和 GPIO 抢同一批脚。这些 ZMK 行为没有被 RMK 改造移除。
 
 ## 构建依赖
 

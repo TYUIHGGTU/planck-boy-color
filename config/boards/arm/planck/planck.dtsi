@@ -127,6 +127,14 @@ sensors: sensors {
     status = "okay";
 };
 
+/* P0.09 is the left blue LED and also an NFC pad. Release both
+ * NFC pads as GPIOs so the LED can be turned off and the central
+ * can advertise.
+ */
+&uicr {
+    nfct-pins-as-gpios;
+};
+
 zephyr_udc0:&usbd {
 		status = "okay";
 };
